@@ -81,6 +81,7 @@ function blob_fixup() {
             "${PATCHELF}" --add-needed libqsap_shim.so "${2}"
             ;;
 
+        # Wrap libgui into libwui
         vendor/lib/libmot_gpu_mapper.so)
             sed -i "s/libgui/libwui/" "${2}"
             ;;
@@ -88,6 +89,23 @@ function blob_fixup() {
         # Fix missing symbols
         vendor/lib64/libril-qc-hal-qmi.so)
             "${PATCHELF}" --add-needed "libcutils_shim.so" "${2}"
+            ;;
+
+        # Wi-Fi Display
+        lib/libaudioclient.so)
+            "${PATCHELF}" --set-soname "libwfdaudioclient.so" "${2}"
+            ;;
+
+        lib/libmediautils.so)
+            "${PATCHELF}" --set-soname "libwfdmediautils.so" "${2}"
+            ;;
+
+        lib/libwfdmmsink.so)
+            "${PATCHELF}" --add-needed "libwfdaudioclient.so" "${2}"
+            ;;
+
+        lib/libwfdmmsink.so)
+            "${PATCHELF}" --add-needed "libwfdmediautils.so" "${2}"
             ;;
 
     esac
